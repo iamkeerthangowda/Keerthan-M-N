@@ -11,4 +11,142 @@ class Solution {
   }
 };
 
+//22.generate paentheses
+class Solution {
+ public:
+  vector<string> generateParenthesis(int n) {
+    vector<string> ans;
+    dfs(n, n, "", ans);
+    return ans;
+  }
+
+ private:
+  void dfs(int l, int r, string&& path, vector<string>& ans) {
+    if (l == 0 && r == 0) {
+      ans.push_back(path);
+      return;
+    }
+
+    if (l > 0) {
+      path.push_back('(');
+      dfs(l - 1, r, std::move(path), ans);
+      path.pop_back();
+    }
+    if (l < r) {
+      path.push_back(')');
+      dfs(l, r - 1, std::move(path), ans);
+      path.pop_back();
+    }
+  }
+};
+
+//23.merge k sorted lists
+class Solution {
+ public:
+  ListNode* mergeKLists(vector<ListNode*>& lists) {
+    ListNode dummy(0);
+    ListNode* curr = &dummy;
+    auto compare = [](ListNode* a, ListNode* b) { return a->val > b->val; };
+    priority_queue<ListNode*, vector<ListNode*>, decltype(compare)> minHeap(
+        compare);
+
+    for (ListNode* list : lists)
+      if (list != nullptr)
+        minHeap.push(list);
+
+    while (!minHeap.empty()) {
+      ListNode* minNode = minHeap.top();
+      minHeap.pop();
+      if (minNode->next)
+        minHeap.push(minNode->next);
+      curr->next = minNode;
+      curr = curr->next;
+    }
+
+    return dummy.next;
+  }
+};
+
+//24.swap Nodes in paris
+class Solution {
+ public:
+  ListNode* swapPairs(ListNode* head) {
+    const int length = getLength(head);
+    ListNode dummy(0, head);
+    ListNode* prev = &dummy;
+    ListNode* curr = head;
+
+    for (int i = 0; i < length / 2; ++i) {
+      ListNode* next = curr->next;
+      curr->next = next->next;
+      next->next = prev->next;
+      prev->next = next;
+      prev = curr;
+      curr = curr->next;
+    }
+
+    return dummy.next;
+  }
+
+ private:
+  int getLength(ListNode* head) {
+    int length = 0;
+    for (ListNode* curr = head; curr; curr = curr->next)
+      ++length;
+    return length;
+  }
+};
+
+//25.Reverse nodes in k Group
+
+class Solution {
+ public:
+  ListNode* reverseKGroup(ListNode* head, int k) {
+    if (head == nullptr)
+      return nullptr;
+
+    ListNode* tail = head;
+
+    for (int i = 0; i < k; ++i) {
+      // There are less than k nodes in the list, do nothing.
+      if (tail == nullptr)
+        return head;
+      tail = tail->next;
+    }
+
+    ListNode* newHead = reverse(head, tail);
+    head->next = reverseKGroup(tail, k);
+    return newHead;
+  }
+
+ private:
+  // Reverses [head, tail).
+  ListNode* reverse(ListNode* head, ListNode* tail) {
+    ListNode* prev = nullptr;
+    ListNode* curr = head;
+    while (curr != tail) {
+      ListNode* next = curr->next;
+      curr->next = prev;
+      prev = curr;
+      curr = next;
+    }
+    return prev;
+  }
+};
+
+//26.Remove duplicates from sorted array
+
+class Solution {
+ public:
+  int removeDuplicates(vector<int>& nums) {
+    int i = 0;
+
+    for (const int num : nums)
+      if (i < 1 || num > nums[i - 1])
+        nums[i++] = num;
+
+    return i;
+  }
+};
+
 
